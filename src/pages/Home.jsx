@@ -2,10 +2,11 @@ import React, { useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import MovieGrid from "../components/MovieGrid.jsx";
 import RecentlyViewed from "../components/RecentlyViewed.jsx";
-import movies from "../data/movies.js";
+import { movies } from "../data/movies.js";
 
 function Home() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const [sortOrder, setSortOrder] = useState("");
   const searchTerm = searchParams.get("search") || "";
   const [selectedGenre, setSelectedGenre] = useState("All");
 
@@ -14,9 +15,8 @@ function Home() {
   const featuredMovie = movies.find((movie) => movie.featured) || movies[0];
 
   // Filter movies by search term AND selected genre
-  const filteredMovies = movies.filter((movie) => {
+  let filteredMovies = movies.filter((movie) => {
     const matchesSearch = movie.title.toLowerCase().includes(searchTerm.toLowerCase());
-    
     const matchesGenre =
       selectedGenre === "All" ||
       (Array.isArray(movie.genre)
@@ -26,41 +26,57 @@ function Home() {
     return matchesSearch && matchesGenre;
   });
 
-  function handleSearchChange(event) {
-    const value = event.target.value;
-    if (value.trim() === "") {
-      setSearchParams({});
-      return;
-    }
-    setSearchParams({ search: value });
+  // Sort movies by rating if a sort order is selected
+  if (sortOrder === "high-to-low") {
+    filteredMovies.sort((a, b) => b.rating - a.rating);
+  } else if (sortOrder === "low-to-high") {
+    filteredMovies.sort((a, b) => a.rating - b.rating);
   }
 
   return (
-    <div className="home-page">
-      {/* Genre Filter Buttons */}
-      <div className="genre-filter-container" style={{ display: "flex", gap: "10px", margin: "20px 0", flexWrap: "wrap" }}>
-        {genres.map((genre) => (
-          <button
-            key={genre}
-            onClick={() => setSelectedGenre(genre)}
-            className={`genre-btn ${selectedGenre === genre ? "active" : ""}`}
-            style={{
-              padding: "8px 16px",
-              borderRadius: "20px",
-              border: "1px solid #ccc",
-              backgroundColor: selectedGenre === genre ? "#007bff" : "#fff",
-              color: selectedGenre === genre ? "#fff" : "#000",
-              cursor: "pointer"
-            }}
-          >
-            {genre}
-          </button>
-        ))}
+    <div className="home-container">
+      {/* Featured Banner */}
+      {featuredMovie && (
+        <div className="hero-banner">
+          <img src={featuredMovie.bannerImage || featuredMovie.image} alt={featuredMovie.title} />
+          <div className="hero-details">
+            <h2>{featuredMovie.title}</h2>
+            <p>{featuredMovie.description}</p>
+            <Link to={`/movie/${featuredMovie.id}`} className="btn-watch">
+              Watch Now
+            </Link>
+          </div>
+        </div>
+      )}
+
+      {/* Controls: Genre Filter & Rating Sort */}
+      <div className="controls-bar" style={{ display: "flex", gap: "1rem", margin: "1rem 0" }}>
+        <div className="genre-filter">
+          <label>Filter by Genre: </label>
+          <select value={selectedGenre} onChange={(e) => setSelectedGenre(e.target.value)}>
+            {genres.map((genre) => (
+              <option key={genre} value={genre}>
+                {genre}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="rating-sort">
+          <label>Sort by Rating: </label>
+          <select value={sortOrder} onChange={(e) => setSortOrder(e.target.value)}>
+            <option value="">Default</option>
+            <option value="high-to-low">Highest Rated</option>
+            <option value="low-to-high">Lowest Rated</option>
+          </select>
+        </div>
       </div>
 
+      {/* Movie Display Grid */}
       <MovieGrid movies={filteredMovies} />
+
+      {/* Recently Viewed Component */}
       <RecentlyViewed />
-    </>
     </div>
   );
 }
