@@ -1,11 +1,24 @@
-import React from "react";
+import React,{ useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import movies from "../data/movies.js";
 
 function MovieDetails() {
   const { movieId } = useParams();
   const movie = movies.find((item) => item.id === Number(movieId));
+  useEffect(() => {
+  if (!movie) return;
 
+  const recentMovies = JSON.parse(
+    localStorage.getItem("recentlyViewed") || "[]"
+  );
+
+  const updatedMovies = [
+    movie,
+    ...recentMovies.filter((item) => item.id !== movie.id),
+  ].slice(0, 5);
+
+  localStorage.setItem("recentlyViewed", JSON.stringify(updatedMovies));
+}, [movie]);
   if (!movie) {
     return (
       <section className="details-page not-found">

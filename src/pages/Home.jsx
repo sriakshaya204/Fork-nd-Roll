@@ -1,6 +1,7 @@
 import React from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import MovieGrid from "../components/MovieGrid.jsx";
+import RecentlyViewed from "../components/RecentlyViewed.jsx";
 import movies from "../data/movies.js";
 
 function Home() {
@@ -58,6 +59,7 @@ function Home() {
       </section>
 
       <MovieGrid movies={filteredMovies} />
+      <RecentlyViewed />
     </>
   );
 }
