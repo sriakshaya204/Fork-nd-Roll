@@ -1,4 +1,4 @@
-import React from "react";
+import React,{ useState} from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import MovieGrid from "../components/MovieGrid.jsx";
 import RecentlyViewed from "../components/RecentlyViewed.jsx";
@@ -6,13 +6,24 @@ import movies from "../data/movies.js";
 
 function Home() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const [sortOrder, setSortOrder] = useState("");
   const searchTerm = searchParams.get("search") || "";
   const featuredMovie = movies.find((movie) => movie.featured) || movies[0];
 
   const filteredMovies = movies.filter((movie) =>
     movie.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
+  const sortedMovies = [...filteredMovies].sort((a, b) => {
+  if (sortOrder === "high") {
+    return b.rating - a.rating;
+  }
 
+  if (sortOrder === "low") {
+    return a.rating - b.rating;
+  }
+
+  return 0;
+});
   function handleSearchChange(event) {
     const value = event.target.value;
 
@@ -56,10 +67,22 @@ function Home() {
             onChange={handleSearchChange}
           />
         </label>
+        <label className="movie-search">
+  <span>Sort by rating</span>
+  <select
+    value={sortOrder}
+    onChange={(event) => setSortOrder(event.target.value)}
+  >
+    <option value="">Default</option>
+    <option value="high">Highest Rating → Lowest</option>
+    <option value="low">Lowest Rating → Highest</option>
+  </select>
+</label>
       </section>
 
-      <MovieGrid movies={filteredMovies} />
-      <RecentlyViewed />
+      <MovieGrid movies={sortedMovies} />
+<RecentlyViewed />
+      
     </>
   );
 }
