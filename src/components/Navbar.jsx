@@ -1,19 +1,57 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 
 function Navbar() {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [searchText, setSearchText] = useState("");
+  const navigate = useNavigate();
+
+  function handleSubmit(event) {
+    event.preventDefault();
+    navigate(`/?search=${encodeURIComponent(searchText.trim())}`);
+    setMenuOpen(false);
+  }
+
   return (
-    <nav className="navbar" style={{ display: "flex", justifyContent: "space-between", padding: "1rem", backgroundColor: "#333", color: "#fff" }}>
-      <div className="nav-logo">
-        <Link to="/" style={{ color: "#fff", textDecoration: "none", fontSize: "1.5rem", fontWeight: "bold" }}>
-          MovieApp
-        </Link>
-      </div>
-      <div className="nav-links" style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
-        <Link to="/" style={{ color: "#fff", textDecoration: "none" }}>Home</Link>
-        <Link to="/watchlist" style={{ color: "#fff", textDecoration: "none" }}>Watchlist</Link>
-      </div>
-    </nav>
+    <header className="navbar">
+      <Link to="/" className="logo" onClick={() => setMenuOpen(false)}>
+        <span className="logo-mark">C</span>
+        <span>CineScope</span>
+      </Link>
+
+      <button
+        className="menu-button"
+        type="button"
+        aria-label="Toggle navigation"
+        onClick={() => setMenuOpen(!menuOpen)}
+      >
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <nav className={menuOpen ? "nav-content show" : "nav-content"}>
+        <div className="nav-links">
+          <NavLink to="/" onClick={() => setMenuOpen(false)}>
+            Home
+          </NavLink>
+          <NavLink to="/movies" onClick={() => setMenuOpen(false)}>
+            Movies
+          </NavLink>
+        </div>
+
+        <form className="nav-search" onSubmit={handleSubmit}>
+          <input
+            type="search"
+            placeholder="Search movies"
+            value={searchText}
+            onChange={(event) => setSearchText(event.target.value)}
+          />
+          <button type="submit">Search</button>
+        </form>
+      </nav>
+    </header>
   );
 }
 

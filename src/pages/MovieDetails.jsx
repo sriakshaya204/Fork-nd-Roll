@@ -1,6 +1,6 @@
 import React,{ useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
-import { movies } from "../data/movies.js";
+import movies from "../data/movies.js";
 
 function MovieDetails() {
   const { movieId } = useParams();
