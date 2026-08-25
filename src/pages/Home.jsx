@@ -14,7 +14,6 @@ function Home() {
 
   const featuredMovie = movies.find((movie) => movie.featured) || movies[0];
 
-  // Filter movies by search term AND selected genre
   let filteredMovies = movies.filter((movie) => {
     const matchesSearch = movie.title.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesGenre =
@@ -26,7 +25,6 @@ function Home() {
     return matchesSearch && matchesGenre;
   });
 
-  // Sort movies by rating if a sort order is selected
   if (sortOrder === "high-to-low") {
     filteredMovies.sort((a, b) => b.rating - a.rating);
   } else if (sortOrder === "low-to-high") {
@@ -35,7 +33,6 @@ function Home() {
 
   return (
     <div className="home-container">
-      {/* Featured Banner */}
       {featuredMovie && (
         <div className="hero-banner">
           <img src={featuredMovie.bannerImage || featuredMovie.image} alt={featuredMovie.title} />
@@ -49,7 +46,6 @@ function Home() {
         </div>
       )}
 
-      {/* Controls: Genre Filter & Rating Sort */}
       <div className="controls-bar" style={{ display: "flex", gap: "1rem", margin: "1rem 0" }}>
         <div className="genre-filter">
           <label>Filter by Genre: </label>
@@ -72,10 +68,7 @@ function Home() {
         </div>
       </div>
 
-      {/* Movie Display Grid */}
       <MovieGrid movies={filteredMovies} />
-
-      {/* Recently Viewed Component */}
       <RecentlyViewed />
     </div>
   );
